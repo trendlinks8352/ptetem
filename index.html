@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PTE HELPER — Template Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080e;
+  --surface:#101018;
+  --surface2:#181824;
+  --border:#252535;
+  --accent:#e8b86d;
+  --accent2:#e86d8a;
+  --accent3:#6de8c8;
+  --text:#eeecf5;
+  --text-dim:#6a6a8a;
+  --correct:#5ddb8c;
+  --wrong:#e8706a;
+  --warn:#e8c46d;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(232,184,109,0.07),transparent),radial-gradient(ellipse 60% 40% at 80% 90%,rgba(109,232,200,0.05),transparent);pointer-events:none;}
+
+.app{position:relative;max-width:860px;margin:0 auto;padding:0 20px 80px;}
+
+/* HEADER */
+header{padding:32px 0 22px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:28px;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:3px;line-height:1;}
+.logo-pte{color:var(--accent);}
+.logo-helper{color:var(--text);}
+.logo-sub{font-size:11px;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-top:4px;}
+.header-stats{display:flex;gap:18px;}
+.hstat{text-align:right;}
+.hstat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);}
+.hstat-label{font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+
+/* PROGRESS */
+.progress-track{height:2px;background:var(--surface2);margin-bottom:24px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 0.5s;}
+
+/* TOP NAV */
+.top-nav{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.top-nav-btn{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.top-nav-btn.active{background:var(--surface);border-color:var(--accent);color:var(--accent);}
+.top-nav-btn:hover:not(.active){color:var(--text);border-color:var(--text-dim);}
+
+/* MODE TABS */
+.mode-tabs{display:flex;gap:5px;margin-bottom:24px;background:var(--surface);padding:5px;border-radius:12px;border:1px solid var(--border);flex-wrap:wrap;}
+.mode-tab{flex:1;padding:9px 6px;border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;transition:all 0.2s;background:transparent;color:var(--text-dim);white-space:nowrap;min-width:70px;}
+.mode-tab.active{background:var(--accent);color:#08080e;box-shadow:0 4px 16px rgba(232,184,109,0.3);}
+.mode-tab:hover:not(.active){color:var(--text);background:var(--surface2);}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'Noto Sans KR',sans-serif;}
+.filter-btn.active{border-color:var(--accent3);color:var(--accent3);background:rgba(109,232,200,0.08);}
+.filter-btn:hover:not(.active){color:var(--text);}
+
+/* QUIZ CARD */
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:30px;margin-bottom:18px;position:relative;overflow:hidden;animation:slideIn 0.3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.quiz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));}
+.card-meta{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.card-type{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:3px;color:var(--accent);padding:3px 10px;border:1px solid rgba(232,184,109,0.3);border-radius:4px;}
+.card-num{font-size:11px;color:var(--text-dim);}
+.card-num::before{content:'—';margin-right:8px;}
+
+/* TEMPLATE DISPLAY */
+.template-label{font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.template-text{font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.2;margin-bottom:20px;color:var(--text);}
+.blank-input{display:inline-block;border-bottom:2px solid var(--accent);background:rgba(232,184,109,0.06);border-radius:5px 5px 0 0;padding:1px 6px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);outline:none;min-width:80px;max-width:260px;vertical-align:baseline;transition:all 0.2s;}
+.blank-input:focus{border-color:var(--accent2);background:rgba(232,109,138,0.07);}
+.blank-input.correct{border-color:var(--correct);background:rgba(93,219,140,0.1);color:var(--correct);}
+.blank-input.wrong{border-color:var(--wrong);background:rgba(232,112,106,0.1);color:var(--wrong);}
+
+/* MCQ */
+.mcq-options{display:grid;gap:8px;margin-bottom:18px;}
+.mcq-btn{width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;text-align:left;transition:all 0.2s;line-height:1.5;}
+.mcq-btn:hover:not(.answered){border-color:var(--accent);background:rgba(232,184,109,0.07);}
+.mcq-btn.selected-correct{border-color:var(--correct);background:rgba(93,219,140,0.1);color:var(--correct);}
+.mcq-btn.selected-wrong{border-color:var(--wrong);background:rgba(232,112,106,0.1);color:var(--wrong);}
+.mcq-btn.reveal-correct{border-color:var(--correct);background:rgba(93,219,140,0.05);color:var(--correct);}
+
+/* RESULT */
+.result-display{margin-top:12px;padding:12px 16px;border-radius:10px;font-size:13px;display:none;line-height:1.8;}
+.result-display.show{display:block;animation:fadeIn 0.3s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.result-display.correct-result{background:rgba(93,219,140,0.08);border:1px solid rgba(93,219,140,0.25);color:var(--correct);}
+.result-display.wrong-result{background:rgba(232,112,106,0.06);border:1px solid rgba(232,112,106,0.25);color:var(--text);}
+.answer-highlight{color:var(--correct);font-weight:600;font-family:'JetBrains Mono',monospace;}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.btn{padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08080e;box-shadow:0 4px 14px rgba(232,184,109,0.25);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,184,109,0.4);}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.btn-ghost{background:transparent;color:var(--text-dim);border:1px solid transparent;}
+.btn-ghost:hover{color:var(--text);border-color:var(--border);}
+
+/* SCORE BAR */
+.score-bar{display:flex;gap:10px;margin-bottom:20px;}
+.score-item{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.score-val{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;}
+.score-val.good{color:var(--correct);}
+.score-val.bad{color:var(--wrong);}
+.score-val.neutral{color:var(--accent);}
+.score-label{font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+/* LIST VIEW */
+.list-view{display:none;}
+.list-view.show{display:block;animation:slideIn 0.3s;}
+.template-group{margin-bottom:28px;}
+.group-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.group-badge{font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(232,184,109,0.12);border:1px solid rgba(232,184,109,0.3);color:var(--accent);letter-spacing:2px;}
+.template-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:6px;cursor:pointer;transition:all 0.2s;}
+.template-item:hover{border-color:var(--accent3);background:var(--surface2);}
+.template-sentence{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.7;}
+.template-blank{color:var(--accent);font-weight:600;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 22px;font-size:12px;z-index:1000;transition:transform 0.3s;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--correct);color:var(--correct);}
+.toast.error{border-color:var(--wrong);color:var(--wrong);}
+
+/* CONGRATS */
+.congrats{text-align:center;padding:60px 20px;display:none;}
+.congrats.show{display:block;animation:slideIn 0.5s;}
+.congrats-emoji{font-size:72px;margin-bottom:16px;}
+.congrats-title{font-family:'Bebas Neue',sans-serif;font-size:52px;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px;}
+.congrats-sub{color:var(--text-dim);font-size:14px;margin-bottom:24px;}
+
+@media(max-width:600px){
+  .logo{font-size:28px}
+  .quiz-card{padding:20px}
+  .template-text{font-size:12px}
+  .blank-input{font-size:12px}
+  .mode-tab{font-size:11px;padding:7px 3px}
+  .score-bar{gap:6px}
+  .score-val{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <div class="logo"><span class="logo-pte">PTE</span> <span class="logo-helper">HELPER</span></div>
+    <div class="logo-sub">Template Quiz — 윤슬쌤</div>
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><div class="hstat-val" id="correctCount">0</div><div class="hstat-label">정답</div></div>
+    <div class="hstat"><div class="hstat-val" id="streakCount">0</div><div class="hstat-label">연속</div></div>
+  </div>
+</header>
+
+<div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<div class="top-nav">
+  <button class="top-nav-btn active" onclick="switchView('quiz')" id="nav-quiz">퀴즈</button>
+  <button class="top-nav-btn" onclick="switchView('list')" id="nav-list">전체 템플릿</button>
+</div>
+
+<!-- QUIZ VIEW -->
+<div id="quizView">
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('fillblank')" id="tab-fillblank">빈칸채우기</button>
+    <button class="mode-tab" onclick="setMode('mcq')" id="tab-mcq">객관식</button>
+    <button class="mode-tab" onclick="setMode('order')" id="tab-order">순서맞추기</button>
+  </div>
+
+  <!-- Template selector -->
+  <div id="templateSelector" style="margin-bottom:18px;"></div>
+
+  <div class="score-bar">
+    <div class="score-item"><div class="score-val good" id="sc-correct">0</div><div class="score-label">정답</div></div>
+    <div class="score-item"><div class="score-val bad" id="sc-wrong">0</div><div class="score-label">오답</div></div>
+    <div class="score-item"><div class="score-val neutral" id="sc-streak">0</div><div class="score-label">연속</div></div>
+    <div class="score-item"><div class="score-val neutral" id="sc-acc">—</div><div class="score-label">정확도</div></div>
+  </div>
+
+  <div id="quizCard" class="quiz-card">
+    <div id="quizContent"></div>
+  </div>
+
+  <div id="congratsDiv" class="congrats">
+    <div class="congrats-emoji">🎉</div>
+    <div class="congrats-title">완료!</div>
+    <div class="congrats-sub">모든 템플릿을 다 학습했어요!</div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn btn-primary" onclick="restartAll()">다시 시작</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIST VIEW -->
+<div id="listView" class="list-view">
+  <div id="listContent"></div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// TEMPLATE DATA
+// ============================================================
+const TEMPLATES = [
+  // DI - 수치 그래프
+  {id:0, type:"DI", subtype:"수치 그래프", sentences:[
+    {text:"This picture gives (shows) information about [제목].", blanks:["제목"]},
+    {text:"The items include [항목1] and [항목2].", blanks:["항목1","항목2"]},
+    {text:"Looking at the graph more closely, the maximum number is [숫자] which is [설명].", blanks:["숫자","설명"]},
+    {text:"The second maximum number is [숫자], which is [설명].", blanks:["숫자","설명"]},
+    {text:"But the minimum number is [숫자], which is [설명].", blanks:["숫자","설명"]},
+    {text:"There are big difference between [항목1] and [항목2].", blanks:["항목1","항목2"]},
+    {text:"In conclusion, this picture is about [제목].", blanks:["제목"]},
+  ]},
+  // DI - 사진
+  {id:1, type:"DI", subtype:"사진", sentences:[
+    {text:"This picture shows information about [주제].", blanks:["주제"]},
+    {text:"The items include [항목1] and [항목2].", blanks:["항목1","항목2"]},
+    {text:"Firstly, in the middle of the picture, you can see [중간요소], which is covered by [색상] color.", blanks:["중간요소","색상"]},
+    {text:"After that, on the right side is [오른쪽요소].", blanks:["오른쪽요소"]},
+    {text:"And the left side is [왼쪽요소].", blanks:["왼쪽요소"]},
+    {text:"Finally, on the top (or bottom) is [요소] which is shown by [색상] color.", blanks:["요소","색상"]},
+    {text:"In conclusion, this picture is about [제목].", blanks:["제목"]},
+  ]},
+  // DI - 사진 인물포함
+  {id:2, type:"DI", subtype:"사진 (인물)", sentences:[
+    {text:"This picture shows information about [주제].", blanks:["주제"]},
+    {text:"The items include [항목1] [항목2] [항목3] [항목4].", blanks:["항목1","항목2","항목3","항목4"]},
+    {text:"Firstly, in the middle of the picture, you can see a [man/woman], [동명사] which is covered by [색상] color.", blanks:["man/woman","동명사","색상"]},
+    {text:"After that, on the right side is a [man/woman] [동명사].", blanks:["man/woman","동명사"]},
+    {text:"And the left side is a [man/woman] [동명사].", blanks:["man/woman","동명사"]},
+    {text:"Finally, on the top (or bottom) is [요소] which is shown by [색상] color.", blanks:["요소","색상"]},
+    {text:"In conclusion, this picture is about [제목].", blanks:["제목"]},
+  ]},
+  // DI - 싸이클
+  {id:3, type:"DI", subtype:"싸이클", sentences:[
+    {text:"This picture shows information about [주제].", blanks:["주제"]},
+    {text:"There are many steps, it showing how the process is done.", blanks:[]},
+    {text:"According to the picture, the first step is [1단계].", blanks:["1단계"]},
+    {text:"The second step is [2단계].", blanks:["2단계"]},
+    {text:"The next step is [다음단계].", blanks:["다음단계"]},
+    {text:"The final step is [마지막단계].", blanks:["마지막단계"]},
+    {text:"Also, I can see the [추가요소].", blanks:["추가요소"]},
+    {text:"In conclusion, this process is about [주제].", blanks:["주제"]},
+  ]},
+  // RL
+  {id:4, type:"RL", subtype:"키워드 8개+", sentences:[
+    {text:"The lecture shows information about [제목].", blanks:["제목"]},
+    {text:"According to the speaker, the main topic is about [주요주제].", blanks:["주요주제"]},
+    {text:"At the beginning of the lecture, the speaker talked about [도입내용].", blanks:["도입내용"]},
+    {text:"Plus, I could hear about [내용1] and [내용2].", blanks:["내용1","내용2"]},
+    {text:"As well as, the speaker explained about [내용3] and [내용4].", blanks:["내용3","내용4"]},
+    {text:"In conclusion (or to sum up), this lecture shows information about [제목].", blanks:["제목"]},
+  ]},
+  // RTS
+  {id:5, type:"RTS", subtype:"전화/메시지", sentences:[
+    {text:"Hi [이름]. This is [나의이름]. I hope you are doing well.", blanks:["이름","나의이름"]},
+    {text:"Here's the situation [상황설명].", blanks:["상황설명"]},
+    {text:"So, I would like to say to [누구] that [하고싶은말].", blanks:["누구","하고싶은말"]},
+    {text:"Because [이유].", blanks:["이유"]},
+    {text:"Please, let me know if you have any questions. Thanks.", blanks:[]},
+  ]},
+  // SGD
+  {id:6, type:"SGD", subtype:"그룹 토론", sentences:[
+    {text:"In this discussion, three people are talking about [주제].", blanks:["주제"]},
+    {text:"The conversation focuses on [명사1] [명사2] and [명사3].", blanks:["명사1","명사2","명사3"]},
+    {text:"First, the first speaker said that [문장1] and [문장2].", blanks:["문장1","문장2"]},
+    {text:"She/he also talked about [명사A], [명사B] and [문장3].", blanks:["명사A","명사B","문장3"]},
+    {text:"Next, the second speaker talked that [문장4] and [문장5].", blanks:["문장4","문장5"]},
+    {text:"He also mentioned about [명사C], [명사D] and [문장6].", blanks:["명사C","명사D","문장6"]},
+    {text:"Finally, the third speaker said that [문장7] and [문장8].", blanks:["문장7","문장8"]},
+    {text:"She/he also explained about [명사E], [명사F] and [문장9].", blanks:["명사E","명사F","문장9"]},
+    {text:"In conclusion, they are all agree that [주제]. / They do not fully agree on this [주제].", blanks:["주제"]},
+    {text:"This discussion was very clear.", blanks:[]},
+  ]},
+  // SWT
+  {id:7, type:"SWT", subtype:"40~50 단어", sentences:[
+    {text:"주제, 특징, 영향, 장단점 문장을 찾아 접속사로 연결하기 (반드시 , 접속사 형태)", blanks:[]},
+    {text:"접속사 FANBOYS: For, And, Nor, But, Or, Yet, So 사용", blanks:[]},
+    {text:"원인 접속사: because, since, so 사용", blanks:[]},
+    {text:"전환 접속사: while, although, whereas, but 사용", blanks:[]},
+    {text:"추가 연결: and, so, both A and B 로 연결하기", blanks:[]},
+    {text:"핵심 키워드는 바뀌지 않게 패러프레이징 3~4개 하기", blanks:[]},
+  ]},
+  // SST
+  {id:8, type:"SST", subtype:"50~70 단어", sentences:[
+    {text:"This lecture focuses on [제목], including [키워드1]: [키워드2]: [키워드3]: [키워드4]: [키워드5].", blanks:["제목","키워드1","키워드2","키워드3","키워드4","키워드5"]},
+    {text:"To begin with, it highlights that [문장1], which [문장2], and [문장3].", blanks:["문장1","문장2","문장3"]},
+    {text:"Finally, this lecture gives information about [제목].", blanks:["제목"]},
+  ]},
+  // WE
+  {id:9, type:"WE", subtype:"200~300 단어", sentences:[
+    {text:"In recent years, the issue of [키워드] has attracted considerable attention.", blanks:["키워드"]},
+    {text:"In my opinion, [동의/비동의 + 제목활용], due to its long-term impact on individuals and society.", blanks:["동의/비동의 + 제목활용"]},
+    {text:"To begin with, [키워드] offers several meaningful advantages.", blanks:["키워드"]},
+    {text:"For instance, it can greatly enhance people's quality of life by making daily routines more convenient and efficient.", blanks:[]},
+    {text:"However, focusing heavily on [키워드] may also introduce certain challenges.", blanks:["키워드"]},
+    {text:"One relevant example is [명사구], showing how poorly planned measures can worsen existing problems.", blanks:["명사구"]},
+    {text:"In conclusion, [키워드] presents both promising opportunities and notable risks.", blanks:["키워드"]},
+    {text:"Ultimately, adopting a well-designed and balanced strategy is essential for maximizing long-term benefits.", blanks:[]},
+  ]},
+];
+
+// (sentences accessed per-template via currentSentence())
+
+// ============================================================
+// STATE
+// ============================================================
+let currentMode = 'fillblank';
+let currentView = 'quiz';
+let currentTemplateId = 0;   // which template we're studying
+let sentencePos = 0;          // position within that template
+let correctCount = 0, wrongCount = 0, streak = 0;
+let answered = false;
+
+function currentTemplate() {
+  return TEMPLATES[currentTemplateId];
+}
+function currentSentences() {
+  return currentTemplate().sentences;
+}
+function currentSentence() {
+  return currentSentences()[sentencePos];
+}
+
+function selectTemplate(id) {
+  currentTemplateId = id;
+  sentencePos = 0;
+  correctCount = 0; wrongCount = 0; streak = 0;
+  answered = false;
+  renderTemplateSelector();
+  loadCurrent();
+}
+
+function renderTemplateSelector() {
+  const typeColors = {DI:'#e8b86d',RL:'#6de8c8',RTS:'#e86d8a',SGD:'#8a6de8',SWT:'#6d9ee8',SST:'#e86db8',WE:'#6de898'};
+  let html = '<div style="display:flex;gap:6px;flex-wrap:wrap;">';
+  TEMPLATES.forEach(t => {
+    const active = t.id === currentTemplateId;
+    const col = typeColors[t.type] || '#e8e8e8';
+    const label = `${t.type} — ${t.subtype}`;
+    html += `<button onclick="selectTemplate(${t.id})" style="
+      padding:7px 13px;border-radius:20px;border:1px solid ${active ? col : 'var(--border)'};
+      background:${active ? col+'22' : 'transparent'};color:${active ? col : 'var(--text-dim)'};
+      font-family:'Noto Sans KR',sans-serif;font-size:11px;cursor:pointer;transition:all 0.2s;
+      font-weight:${active?'600':'400'};
+    ">${label}</button>`;
+  });
+  html += '</div>';
+  document.getElementById('templateSelector').innerHTML = html;
+}
+
+// ============================================================
+// VIEWS
+// ============================================================
+function switchView(v) {
+  currentView = v;
+  document.getElementById('quizView').style.display = v==='quiz'?'block':'none';
+  document.getElementById('listView').style.display = v==='list'?'block':'none';
+  document.querySelectorAll('.top-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-'+v).classList.add('active');
+  if(v==='list') renderList();
+}
+
+function setMode(m) {
+  currentMode = m;
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+m).classList.add('active');
+  sentencePos = 0;
+  answered = false;
+  loadCurrent();
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+function loadCurrent() {
+  answered = false;
+  document.getElementById('congratsDiv').style.display = 'none';
+  document.getElementById('quizCard').style.display = 'block';
+
+  const sentences = currentSentences();
+  if(sentencePos >= sentences.length) {
+    document.getElementById('quizCard').style.display = 'none';
+    document.getElementById('congratsDiv').style.display = 'block';
+    return;
+  }
+
+  const s = currentSentence();
+  document.getElementById('quizCard').innerHTML = '';
+  const div = document.createElement('div');
+  div.id = 'quizContent';
+
+  const t = currentTemplate();
+  const typeColors = {DI:'#e8b86d',RL:'#6de8c8',RTS:'#e86d8a',SGD:'#8a6de8',SWT:'#6d9ee8',SST:'#e86db8',WE:'#6de898'};
+  const col = typeColors[t.type] || '#e8e8e8';
+  const meta = `<div class="card-meta">
+    <span class="card-type" style="color:${col};border-color:${col}44;">${t.type} — ${t.subtype}</span>
+    <span class="card-num">문장 ${sentencePos+1} / ${sentences.length}</span>
+  </div>`;
+
+  if(currentMode === 'fillblank') div.innerHTML = meta + renderFillBlank(s);
+  else if(currentMode === 'mcq') div.innerHTML = meta + renderMCQ(s);
+  else if(currentMode === 'order') div.innerHTML = meta + renderOrder(s);
+
+  document.getElementById('quizCard').appendChild(div);
+  updateStats();
+  updateProgress();
+
+  if(currentMode==='fillblank') attachFillBlankEvents(s);
+  else if(currentMode==='order') attachOrderEvents(s);
+}
+
+// ---------- FILL BLANK ----------
+function renderFillBlank(s) {
+  if(s.blanks.length === 0) {
+    return `<div class="template-label">전체 문장</div>
+    <div class="template-text" style="color:var(--text-dim);font-style:italic;font-size:13px;">${escHtml(s.text)}</div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">이 문장은 빈칸이 없습니다. 암기하세요!</div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="nextSentence()">다음 →</button></div>`;
+  }
+  let html = s.text;
+  s.blanks.forEach((b,i) => {
+    html = html.replace(`[${b}]`, `<input class="blank-input" id="blank-${i}" data-answer="${escAttr(b)}" placeholder="${escAttr(b)}" autocomplete="off" spellcheck="false">`);
+  });
+  return `<div class="template-label">빈칸을 채우세요</div>
+  <div class="template-text" id="fillText">${html}</div>
+  <div class="result-display" id="resultDisplay"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" id="checkBtn" onclick="checkFillBlank()">확인</button>
+    <button class="btn btn-secondary" onclick="showAnswerFill()">정답 보기</button>
+    <button class="btn btn-ghost" onclick="nextSentence()">건너뛰기</button>
+  </div>`;
+}
+
+function attachFillBlankEvents(s) {
+  const inputs = document.querySelectorAll('.blank-input');
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('keydown', e => {
+      if(e.key==='Enter') {
+        if(i < inputs.length-1) inputs[i+1].focus();
+        else checkFillBlank();
+      }
+    });
+  });
+  if(inputs.length > 0) inputs[0].focus();
+}
+
+function checkFillBlank() {
+  if(answered) { nextSentence(); return; }
+  const s = currentSentence();
+  const inputs = document.querySelectorAll('.blank-input');
+  let allCorrect = true;
+  inputs.forEach((inp, i) => {
+    const userVal = inp.value.trim();
+    const correct = userVal.length > 0;
+    if(!correct) allCorrect = false;
+    inp.classList.add(correct ? 'correct' : 'wrong');
+    inp.disabled = true;
+  });
+
+  answered = true;
+  const rd = document.getElementById('resultDisplay');
+  if(allCorrect) {
+    rd.className = 'result-display show correct-result';
+    rd.innerHTML = `✅ 모든 빈칸을 채웠습니다! 내용을 확인하세요.`;
+    correctCount++; streak++;
+    showToast('잘했어요! 🎉','success');
+  } else {
+    rd.className = 'result-display show wrong-result';
+    rd.innerHTML = `❌ 빈칸을 모두 채워주세요.`;
+    wrongCount++; streak=0;
+    showToast('빈칸을 모두 채워보세요','error');
+  }
+  document.getElementById('checkBtn').textContent = '다음 →';
+  document.getElementById('checkBtn').onclick = nextSentence;
+  updateStats();
+}
+
+function showAnswerFill() {
+  const s = currentSentence();
+  document.querySelectorAll('.blank-input').forEach((inp,i) => {
+    inp.value = s.blanks[i];
+    inp.classList.add('correct');
+    inp.disabled = true;
+  });
+  answered = true;
+  const rd = document.getElementById('resultDisplay');
+  rd.className = 'result-display show wrong-result';
+  rd.innerHTML = `정답을 확인하세요: <span class="answer-highlight">${s.blanks.join(' / ')}</span>`;
+  wrongCount++; streak=0;
+  updateStats();
+}
+
+// ---------- MCQ ----------
+function renderMCQ(s) {
+  if(s.blanks.length === 0) {
+    return `<div class="template-label">전체 문장 암기</div>
+    <div style="background:var(--surface2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+      <div class="template-text" style="font-size:13px;">${escHtml(s.text)}</div>
+    </div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">빈칸이 없는 암기 문장입니다.</div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="nextSentence()">다음 →</button></div>`;
+  }
+  const blank = s.blanks[0];
+  const qText = s.text.replace(`[${blank}]`, `<strong style="color:var(--accent);">[ ? ]</strong>`);
+
+  // Use other blanks from same template as distractors
+  const allBlanks = currentSentences().flatMap(sen=>sen.blanks).filter(b=>b!==blank);
+  const extra = ['내용','설명','항목','결론','이유','주제','문장','키워드'];
+  const pool = [...new Set([...allBlanks,...extra])].filter(w=>w!==blank);
+  const wrongs = pool.sort(()=>Math.random()-0.5).slice(0,3);
+  const opts = [blank,...wrongs].sort(()=>Math.random()-0.5);
+
+  const optHtml = opts.map(o =>
+    `<button class="mcq-btn" onclick="checkMCQ(this,'${escAttr(o)}','${escAttr(blank)}')">${escHtml(o)}</button>`
+  ).join('');
+
+  return `<div class="template-label">올바른 빈칸 단어를 고르세요</div>
+  <div style="background:var(--surface2);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;">${qText}</div>
+  <div class="mcq-options" id="mcqOpts">${optHtml}</div>
+  <div class="result-display" id="resultDisplay"></div>
+  <div class="btn-row" id="mcqNext" style="display:none;">
+    <button class="btn btn-primary" onclick="nextSentence()">다음 →</button>
+  </div>`;
+}
+
+function checkMCQ(btn, chosen, correct) {
+  if(answered) return;
+  answered = true;
+  document.querySelectorAll('.mcq-btn').forEach(b=>{b.classList.add('answered');b.disabled=true;});
+  const rd = document.getElementById('resultDisplay');
+  if(chosen===correct) {
+    btn.classList.add('selected-correct');
+    rd.className='result-display show correct-result';
+    rd.innerHTML='✅ 정답입니다!';
+    correctCount++; streak++;
+    showToast('정답! 🎉','success');
+  } else {
+    btn.classList.add('selected-wrong');
+    document.querySelectorAll('.mcq-btn').forEach(b=>{
+      if(b.textContent===correct) b.classList.add('reveal-correct');
+    });
+    rd.className='result-display show wrong-result';
+    rd.innerHTML=`❌ 정답은: <span class="answer-highlight">${escHtml(correct)}</span>`;
+    wrongCount++; streak=0;
+    showToast('오답','error');
+  }
+  document.getElementById('mcqNext').style.display='flex';
+  updateStats();
+}
+
+function attachMCQEvents(){}
+
+// ---------- ORDER (순서맞추기) ----------
+function renderOrder(s) {
+  // Shuffle words of the sentence
+  const words = s.text.replace(/\[.*?\]/g, m=>m).split(' ').filter(w=>w);
+  const shuffled = [...words].sort(()=>Math.random()-0.5);
+  const chips = shuffled.map((w,i)=>
+    `<span class="word-chip" data-word="${escAttr(w)}" onclick="selectWord(this)" style="display:inline-block;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;margin:3px;transition:all 0.2s;">${escHtml(w)}</span>`
+  ).join('');
+
+  return `<div class="template-label">단어를 올바른 순서로 클릭하세요</div>
+  <div id="orderAnswer" style="min-height:48px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;color:var(--text-dim);">여기에 단어가 쌓입니다...</div>
+  <div id="wordBank" style="padding:10px 0;">${chips}</div>
+  <div class="result-display" id="resultDisplay"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" id="checkOrderBtn" onclick="checkOrder()">확인</button>
+    <button class="btn btn-secondary" onclick="clearOrder()">초기화</button>
+    <button class="btn btn-ghost" onclick="showAnswerOrder()">정답 보기</button>
+  </div>`;
+}
+
+let orderSelected = [];
+function attachOrderEvents(s){
+  orderSelected = [];
+  window._orderSentence = s.text;
+}
+function selectWord(el) {
+  if(el.style.opacity==='0.3') return;
+  el.style.opacity='0.3';
+  el.style.borderColor='var(--accent)';
+  orderSelected.push(el.dataset.word);
+  const ans = document.getElementById('orderAnswer');
+  ans.style.color='var(--text)';
+  ans.textContent = orderSelected.join(' ');
+}
+function clearOrder() {
+  orderSelected = [];
+  document.querySelectorAll('.word-chip').forEach(c=>{c.style.opacity='1';c.style.borderColor='var(--border)';});
+  const ans = document.getElementById('orderAnswer');
+  ans.textContent='여기에 단어가 쌓입니다...';
+  ans.style.color='var(--text-dim)';
+}
+function checkOrder() {
+  if(answered) {nextSentence();return;}
+  const s = currentSentence();
+  const correct = s.text;
+  const user = orderSelected.join(' ');
+  answered = true;
+  const rd = document.getElementById('resultDisplay');
+  if(user.trim()===correct.trim()) {
+    rd.className='result-display show correct-result';
+    rd.innerHTML='✅ 완벽한 순서입니다!';
+    correctCount++; streak++;
+    showToast('정답! 🎉','success');
+  } else {
+    rd.className='result-display show wrong-result';
+    rd.innerHTML=`❌ 정답: <span class="answer-highlight">${escHtml(correct)}</span>`;
+    wrongCount++; streak=0;
+    showToast('틀렸어요','error');
+  }
+  document.getElementById('checkOrderBtn').textContent='다음 →';
+  document.getElementById('checkOrderBtn').onclick=nextSentence;
+  updateStats();
+}
+function showAnswerOrder() {
+  const s = currentSentence();
+  document.getElementById('orderAnswer').textContent = s.text;
+  document.getElementById('orderAnswer').style.color='var(--correct)';
+  answered=true;
+  wrongCount++; streak=0;
+  updateStats();
+}
+
+// ============================================================
+// LIST VIEW
+// ============================================================
+function renderList() {
+  let html = '';
+  TEMPLATES.forEach(t => {
+    const typeColor = {DI:'#e8b86d',RL:'#6de8c8',RTS:'#e86d8a',SGD:'#8a6de8',SWT:'#6d9ee8',SST:'#e86db8',WE:'#6de898'}[t.type]||'#e8e8e8';
+    html += `<div class="template-group">
+      <div class="group-title" style="color:${typeColor};">
+        ${t.type} <span class="group-badge">${t.subtype}</span>
+      </div>
+      ${t.sentences.map((s,i)=>{
+        let disp = s.text;
+        s.blanks.forEach(b=>{
+          disp = disp.replace(`[${b}]`,`<span class="template-blank">[${b}]</span>`);
+        });
+        return `<div class="template-item">
+          <div class="template-sentence">${i+1}. ${disp}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+  document.getElementById('listContent').innerHTML = html;
+}
+
+// ============================================================
+// NAV / STATS
+// ============================================================
+function nextSentence(){sentencePos++;answered=false;loadCurrent();}
+function restartAll(){correctCount=0;wrongCount=0;streak=0;sentencePos=0;answered=false;loadCurrent();}
+function updateStats(){
+  document.getElementById('correctCount').textContent=correctCount;
+  document.getElementById('streakCount').textContent=streak;
+  document.getElementById('sc-correct').textContent=correctCount;
+  document.getElementById('sc-wrong').textContent=wrongCount;
+  document.getElementById('sc-streak').textContent=streak;
+  const tot=correctCount+wrongCount;
+  document.getElementById('sc-acc').textContent=tot?Math.round(correctCount/tot*100)+'%':'—';
+}
+function updateProgress(){
+  const sentences = currentSentences();
+  const pct = sentences.length ? (sentencePos/sentences.length*100) : 0;
+  document.getElementById('progressFill').style.width=pct+'%';
+}
+
+// ============================================================
+// TOAST / HELPERS
+// ============================================================
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2000);
+}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escAttr(s){return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
+
+// ============================================================
+// INIT
+// ============================================================
+renderTemplateSelector();
+loadCurrent();
+</script>
+</body>
+</html>
