@@ -122,6 +122,18 @@ header{padding:32px 0 22px;display:flex;align-items:flex-end;justify-content:spa
 .template-sentence{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.7;}
 .template-blank{color:var(--accent);font-weight:600;}
 
+/* TTS BAR */
+.tts-bar{display:flex;align-items:center;gap:8px;margin-bottom:18px;padding:10px 14px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);}
+.tts-play-btn{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 3px 12px rgba(232,184,109,0.3);transition:all 0.2s;font-size:16px;flex-shrink:0;}
+.tts-play-btn:hover{transform:scale(1.08);}
+.tts-play-btn.playing{animation:tts-pulse 1s infinite;}
+@keyframes tts-pulse{0%,100%{box-shadow:0 3px 12px rgba(232,184,109,0.3)}50%{box-shadow:0 3px 22px rgba(232,184,109,0.7)}}
+.tts-speed-btns{display:flex;gap:4px;}
+.tts-speed-btn{padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:11px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all 0.2s;}
+.tts-speed-btn.active{border-color:var(--accent3);color:var(--accent3);background:rgba(109,232,200,0.08);}
+.tts-label{font-size:11px;color:var(--text-dim);margin-left:4px;flex:1;}
+.tts-voice-select{background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text-dim);font-size:11px;padding:4px 8px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;outline:none;max-width:130px;}
+
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 22px;font-size:12px;z-index:1000;transition:transform 0.3s;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -333,6 +345,8 @@ function currentSentence() {
 }
 
 function selectTemplate(id) {
+  speechSynthesis.cancel();
+  ttsPlaying = false;
   currentTemplateId = id;
   sentencePos = 0;
   correctCount = 0; wrongCount = 0; streak = 0;
@@ -406,6 +420,15 @@ function loadCurrent() {
   const meta = `<div class="card-meta">
     <span class="card-type" style="color:${col};border-color:${col}44;">${t.type} — ${t.subtype}</span>
     <span class="card-num">문장 ${sentencePos+1} / ${sentences.length}</span>
+  </div>
+  <div class="tts-bar">
+    <button class="tts-play-btn" id="ttsBtn" onclick="ttsPlay()" title="문장 읽기">▶</button>
+    <span class="tts-label" id="ttsLabel">듣기</span>
+    <div class="tts-speed-btns">
+      <button class="tts-speed-btn ${ttsRate===0.7?'active':''}" onclick="ttsSetRate(0.7)">0.7×</button>
+      <button class="tts-speed-btn ${ttsRate===1.0?'active':''}" onclick="ttsSetRate(1.0)">1.0×</button>
+      <button class="tts-speed-btn ${ttsRate===1.3?'active':''}" onclick="ttsSetRate(1.3)">1.3×</button>
+    </div>
   </div>`;
 
   if(currentMode === 'fillblank') div.innerHTML = meta + renderFillBlank(s);
@@ -661,8 +684,8 @@ function renderList() {
 // ============================================================
 // NAV / STATS
 // ============================================================
-function nextSentence(){sentencePos++;answered=false;loadCurrent();}
-function restartAll(){correctCount=0;wrongCount=0;streak=0;sentencePos=0;answered=false;loadCurrent();}
+function nextSentence(){speechSynthesis.cancel();ttsPlaying=false;sentencePos++;answered=false;loadCurrent();}
+function restartAll(){speechSynthesis.cancel();ttsPlaying=false;correctCount=0;wrongCount=0;streak=0;sentencePos=0;answered=false;loadCurrent();}
 function updateStats(){
   document.getElementById('correctCount').textContent=correctCount;
   document.getElementById('streakCount').textContent=streak;
@@ -688,6 +711,81 @@ function showToast(msg,type){
 }
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escAttr(s){return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
+
+// ============================================================
+// TTS — Web Speech API
+// ============================================================
+let ttsRate = 1.0;
+let ttsUtterance = null;
+let ttsVoice = null;
+let ttsPlaying = false;
+
+// Load English voices (may load async in some browsers)
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+  // Prefer en-AU (Australian English — closest to PTE accent) then en-GB, then en-US
+  const priority = ['en-AU','en-GB','en-US','en'];
+  for(const lang of priority) {
+    const v = voices.find(v => v.lang.startsWith(lang));
+    if(v) { ttsVoice = v; break; }
+  }
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function ttsGetText() {
+  // Strip bracket placeholders for clean speech
+  const s = currentSentence();
+  return s.text.replace(/\[.*?\]/g, '...').replace(/\(.*?\)/g, '').replace(/\s+/g,' ').trim();
+}
+
+function ttsPlay() {
+  if(ttsPlaying) {
+    speechSynthesis.cancel();
+    ttsSetIdle();
+    return;
+  }
+  const text = ttsGetText();
+  if(!text) return;
+
+  speechSynthesis.cancel();
+  ttsUtterance = new SpeechSynthesisUtterance(text);
+  ttsUtterance.lang = 'en-AU';
+  ttsUtterance.rate = ttsRate;
+  if(ttsVoice) ttsUtterance.voice = ttsVoice;
+
+  ttsUtterance.onstart = () => {
+    ttsPlaying = true;
+    const btn = document.getElementById('ttsBtn');
+    const lbl = document.getElementById('ttsLabel');
+    if(btn) { btn.textContent = '■'; btn.classList.add('playing'); }
+    if(lbl) lbl.textContent = '재생 중... (클릭으로 정지)';
+  };
+  ttsUtterance.onend = ttsUtterance.onerror = () => ttsSetIdle();
+
+  speechSynthesis.speak(ttsUtterance);
+}
+
+function ttsSetIdle() {
+  ttsPlaying = false;
+  const btn = document.getElementById('ttsBtn');
+  const lbl = document.getElementById('ttsLabel');
+  if(btn) { btn.textContent = '▶'; btn.classList.remove('playing'); }
+  if(lbl) lbl.textContent = '듣기';
+}
+
+function ttsSetRate(r) {
+  ttsRate = r;
+  // Update active button UI
+  document.querySelectorAll('.tts-speed-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.textContent) === r);
+  });
+  // If currently playing, restart with new rate
+  if(ttsPlaying) { speechSynthesis.cancel(); ttsPlay(); }
+}
+
+// Stop TTS when navigating away
+const _origNext = nextSentence;
 
 // ============================================================
 // INIT
