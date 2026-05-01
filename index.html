@@ -309,16 +309,33 @@ const TEMPLATES = [
     {text:"To begin with, it highlights that [문장1], which [문장2], and [문장3].", blanks:["문장1","문장2","문장3"]},
     {text:"Finally, this lecture gives information about [제목].", blanks:["제목"]},
   ]},
-  // WE
-  {id:9, type:"WE", subtype:"200~300 단어", sentences:[
-    {text:"In recent years, the issue of [키워드] has attracted considerable attention.", blanks:["키워드"]},
-    {text:"In my opinion, [동의/비동의 + 제목활용], due to its long-term impact on individuals and society.", blanks:["동의/비동의 + 제목활용"]},
-    {text:"To begin with, [키워드] offers several meaningful advantages.", blanks:["키워드"]},
-    {text:"For instance, it can greatly enhance people's quality of life by making daily routines more convenient and efficient.", blanks:[]},
-    {text:"However, focusing heavily on [키워드] may also introduce certain challenges.", blanks:["키워드"]},
-    {text:"One relevant example is [명사구], showing how poorly planned measures can worsen existing problems.", blanks:["명사구"]},
-    {text:"In conclusion, [키워드] presents both promising opportunities and notable risks.", blanks:["키워드"]},
-    {text:"Ultimately, adopting a well-designed and balanced strategy is essential for maximizing long-term benefits.", blanks:[]},
+  // WE — Introduction
+  {id:9, type:"WE", subtype:"Introduction", sentences:[
+    {text:"In recent years, the issue of [topic] has become a matter of significant concern.", blanks:["topic"]},
+    {text:"While some people argue that [opposite view], I strongly agree that [your position] because it brings substantial long-term benefits to society.", blanks:["opposite view","your position"]},
+  ]},
+  // WE — Body 1
+  {id:10, type:"WE", subtype:"Body 1 — 핵심 이유 1", sentences:[
+    {text:"To begin with, [your position] can effectively address major urban problems such as [problem].", blanks:["your position","problem"]},
+    {text:"For example, when [구체 사례], it leads to [positive result].", blanks:["구체 사례","positive result"]},
+    {text:"As a result, this approach improves overall efficiency and enhances people's daily lives.", blanks:[]},
+  ]},
+  // WE — Body 2
+  {id:11, type:"WE", subtype:"Body 2 — 핵심 이유 2", sentences:[
+    {text:"In addition, [your position] is more sustainable in the long run.", blanks:["your position"]},
+    {text:"It reduces [negative factor] and promotes [positive factor].", blanks:["negative factor","positive factor"]},
+    {text:"Therefore, governments can achieve both economic and environmental benefits simultaneously.", blanks:[]},
+  ]},
+  // WE — Body 3
+  {id:12, type:"WE", subtype:"Body 3 — 반대 + 반박", sentences:[
+    {text:"Admittedly, some believe that [opposite view] because [reason].", blanks:["opposite view","reason"]},
+    {text:"However, this is only a short-term solution, as it often leads to [problem].", blanks:["problem"]},
+    {text:"Thus, prioritizing [your position] remains the more effective strategy.", blanks:["your position"]},
+  ]},
+  // WE — Conclusion
+  {id:13, type:"WE", subtype:"Conclusion", sentences:[
+    {text:"In conclusion, although both perspectives have some merit, I firmly believe that [your position] is far more beneficial.", blanks:["your position"]},
+    {text:"Governments should therefore adopt this approach to ensure sustainable and efficient development.", blanks:[]},
   ]},
 ];
 
