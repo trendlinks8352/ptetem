@@ -223,119 +223,108 @@ header{padding:32px 0 22px;display:flex;align-items:flex-end;justify-content:spa
 // TEMPLATE DATA
 // ============================================================
 const TEMPLATES = [
-  // DI - 수치 그래프
-  {id:0, type:"DI", subtype:"수치 그래프", sentences:[
-    {text:"This picture gives (shows) information about [제목].", blanks:["제목"]},
-    {text:"The items include [항목1] and [항목2].", blanks:["항목1","항목2"]},
-    {text:"Looking at the graph more closely, the maximum number is [숫자] which is [설명].", blanks:["숫자","설명"]},
-    {text:"The second maximum number is [숫자], which is [설명].", blanks:["숫자","설명"]},
-    {text:"But the minimum number is [숫자], which is [설명].", blanks:["숫자","설명"]},
-    {text:"There are big difference between [항목1] and [항목2].", blanks:["항목1","항목2"]},
-    {text:"In conclusion, this picture is about [제목].", blanks:["제목"]},
+
+  // ── DI ────────────────────────────────────────────────────
+  // DI - Graph / Chart
+  {id:0, type:"DI", subtype:"Graph · Chart", sentences:[
+    {text:"This [image/graph/chart/map] gives a lot of information about [Topic].", blanks:["image/graph/chart/map","Topic"]},
+    {text:"According to this [image/graph/chart/map], the item includes -- and --.", blanks:["image/graph/chart/map"]},
+    {text:"The largest number is [가장 높은 항목] which is [수치].", blanks:["가장 높은 항목","수치"]},
+    {text:"And the following number is [다음으로 높은 항목], which is [수치].", blanks:["다음으로 높은 항목","수치"]},
+    {text:"On the other hand, the smallest number is [가장 낮은 항목], which is [수치].", blanks:["가장 낮은 항목","수치"]},
+    {text:"There are [숫자] series in the graph, including [항목1], [항목2] and [항목3].", blanks:["숫자","항목1","항목2","항목3"]},
+    {text:"This shows an upward / downward trend.", blanks:[]},
+    {text:"In conclusion, this shows [차트 제목 or 이미지 주제].", blanks:["차트 제목 or 이미지 주제"]},
   ]},
-  // DI - 사진
-  {id:1, type:"DI", subtype:"사진", sentences:[
-    {text:"This picture shows information about [주제].", blanks:["주제"]},
-    {text:"The items include [항목1] and [항목2].", blanks:["항목1","항목2"]},
-    {text:"Firstly, in the middle of the picture, you can see [중간요소], which is covered by [색상] color.", blanks:["중간요소","색상"]},
-    {text:"After that, on the right side is [오른쪽요소].", blanks:["오른쪽요소"]},
-    {text:"And the left side is [왼쪽요소].", blanks:["왼쪽요소"]},
-    {text:"Finally, on the top (or bottom) is [요소] which is shown by [색상] color.", blanks:["요소","색상"]},
-    {text:"In conclusion, this picture is about [제목].", blanks:["제목"]},
+
+  // DI - Image
+  {id:1, type:"DI", subtype:"Image", sentences:[
+    {text:"This [image/graph/chart/map] gives a lot of information about [Topic].", blanks:["image/graph/chart/map","Topic"]},
+    {text:"According to this [image/graph/chart/map], the item includes -- and --.", blanks:["image/graph/chart/map"]},
+    {text:"At the top of this image, there is a [요소].", blanks:["요소"]},
+    {text:"At the bottom / In the middle of it / On the left side / On the right side, [요소].", blanks:["요소"]},
+    {text:"There is [요소] at the corner.", blanks:["요소"]},
+    {text:"There is [요소], next to the [요소].", blanks:["요소","요소"]},
+    {text:"In conclusion, this shows [차트 제목 or 이미지 주제].", blanks:["차트 제목 or 이미지 주제"]},
   ]},
-  // DI - 사진 인물포함
-  {id:2, type:"DI", subtype:"사진 (인물)", sentences:[
-    {text:"This picture shows information about [주제].", blanks:["주제"]},
-    {text:"The items include [항목1] [항목2] [항목3] [항목4].", blanks:["항목1","항목2","항목3","항목4"]},
-    {text:"Firstly, in the middle of the picture, you can see a [man/woman], [동명사] which is covered by [색상] color.", blanks:["man/woman","동명사","색상"]},
-    {text:"After that, on the right side is a [man/woman] [동명사].", blanks:["man/woman","동명사"]},
-    {text:"And the left side is a [man/woman] [동명사].", blanks:["man/woman","동명사"]},
-    {text:"Finally, on the top (or bottom) is [요소] which is shown by [색상] color.", blanks:["요소","색상"]},
-    {text:"In conclusion, this picture is about [제목].", blanks:["제목"]},
+
+  // DI - Process
+  {id:2, type:"DI", subtype:"Process", sentences:[
+    {text:"This [image/graph/chart/map] gives a lot of information about [Topic].", blanks:["image/graph/chart/map","Topic"]},
+    {text:"According to this [image/graph/chart/map], the item includes -- and --.", blanks:["image/graph/chart/map"]},
+    {text:"In the picture, the first step is [1단계].", blanks:["1단계"]},
+    {text:"The next step is [2단계].", blanks:["2단계"]},
+    {text:"The third step is [3단계].", blanks:["3단계"]},
+    {text:"Finally, in the last step, [마지막단계].", blanks:["마지막단계"]},
+    {text:"In conclusion, this shows [차트 제목 or 이미지 주제].", blanks:["차트 제목 or 이미지 주제"]},
   ]},
-  // DI - 싸이클
-  {id:3, type:"DI", subtype:"싸이클", sentences:[
-    {text:"This picture shows information about [주제].", blanks:["주제"]},
-    {text:"There are many steps, it showing how the process is done.", blanks:[]},
-    {text:"According to the picture, the first step is [1단계].", blanks:["1단계"]},
-    {text:"The second step is [2단계].", blanks:["2단계"]},
-    {text:"The next step is [다음단계].", blanks:["다음단계"]},
-    {text:"The final step is [마지막단계].", blanks:["마지막단계"]},
-    {text:"Also, I can see the [추가요소].", blanks:["추가요소"]},
-    {text:"In conclusion, this process is about [주제].", blanks:["주제"]},
+
+  // ── RL ────────────────────────────────────────────────────
+  {id:3, type:"RL", subtype:"Retell Lecture", sentences:[
+    {text:"This lecture gives a lot of information about [Topic].", blanks:["Topic"]},
+    {text:"First, the speaker said that [sentence 1].", blanks:["sentence 1"]},
+    {text:"Next, the speaker mentioned that [sentence 2].", blanks:["sentence 2"]},
+    {text:"Finally, he/she concluded that [sentence 3].", blanks:["sentence 3"]},
+    {text:"In conclusion, this lecture is about [Topic].", blanks:["Topic"]},
   ]},
-  // RL
-  {id:4, type:"RL", subtype:"키워드 8개+", sentences:[
-    {text:"The lecture shows information about [제목].", blanks:["제목"]},
-    {text:"According to the speaker, the main topic is about [주요주제].", blanks:["주요주제"]},
-    {text:"At the beginning of the lecture, the speaker talked about [도입내용].", blanks:["도입내용"]},
-    {text:"Plus, I could hear about [내용1] and [내용2].", blanks:["내용1","내용2"]},
-    {text:"As well as, the speaker explained about [내용3] and [내용4].", blanks:["내용3","내용4"]},
-    {text:"In conclusion (or to sum up), this lecture shows information about [제목].", blanks:["제목"]},
+
+  // ── RTS ───────────────────────────────────────────────────
+  {id:4, type:"RTS", subtype:"Respond to Situation", sentences:[
+    {text:"Hi [friend/tutor/teacher/professor]. Do you have a moment?", blanks:["friend/tutor/teacher/professor"]},
+    {text:"I want to discuss about [keyword].", blanks:["keyword"]},
+    {text:"The background is that [문제에 나온 상황 그대로].", blanks:["문제에 나온 상황 그대로"]},
+    {text:"To resolve this, I have a suggestion.", blanks:[]},
+    {text:"Could you [요청사항]?", blanks:["요청사항"]},
+    {text:"That is it. Thank you for your consideration.", blanks:[]},
   ]},
-  // RTS
-  {id:5, type:"RTS", subtype:"전화/메시지", sentences:[
-    {text:"Hi [이름]. This is [나의이름]. I hope you are doing well.", blanks:["이름","나의이름"]},
-    {text:"Here's the situation [상황설명].", blanks:["상황설명"]},
-    {text:"So, I would like to say to [누구] that [하고싶은말].", blanks:["누구","하고싶은말"]},
-    {text:"Because [이유].", blanks:["이유"]},
-    {text:"Please, let me know if you have any questions. Thanks.", blanks:[]},
+
+  // ── SGD ───────────────────────────────────────────────────
+  {id:5, type:"SGD", subtype:"Summarise Spoken Text", sentences:[
+    {text:"This discussion gives a lot of information about [Topic].", blanks:["Topic"]},
+    {text:"There are three different speakers and they are sharing their own opinions.", blanks:[]},
+    {text:"First speaker said/mentioned/explained/highlighted that [sentence1], [sentence2], [sentence3].", blanks:["sentence1","sentence2","sentence3"]},
+    {text:"Next, second speaker said/mentioned/explained/highlighted that [sentence4], [sentence5], [sentence6].", blanks:["sentence4","sentence5","sentence6"]},
+    {text:"Finally, third speaker said/mentioned/explained/highlighted that [sentence7], [sentence8], [sentence9].", blanks:["sentence7","sentence8","sentence9"]},
+    {text:"In conclusion, the discussion covered a wide range of views about [Topic].", blanks:["Topic"]},
   ]},
-  // SGD
-  {id:6, type:"SGD", subtype:"그룹 토론", sentences:[
-    {text:"In this discussion, three people are talking about [주제].", blanks:["주제"]},
-    {text:"The conversation focuses on [명사1] [명사2] and [명사3].", blanks:["명사1","명사2","명사3"]},
-    {text:"First, the first speaker said that [문장1] and [문장2].", blanks:["문장1","문장2"]},
-    {text:"She/he also talked about [명사A], [명사B] and [문장3].", blanks:["명사A","명사B","문장3"]},
-    {text:"Next, the second speaker talked that [문장4] and [문장5].", blanks:["문장4","문장5"]},
-    {text:"He also mentioned about [명사C], [명사D] and [문장6].", blanks:["명사C","명사D","문장6"]},
-    {text:"Finally, the third speaker said that [문장7] and [문장8].", blanks:["문장7","문장8"]},
-    {text:"She/he also explained about [명사E], [명사F] and [문장9].", blanks:["명사E","명사F","문장9"]},
-    {text:"In conclusion, they are all agree that [주제]. / They do not fully agree on this [주제].", blanks:["주제"]},
-    {text:"This discussion was very clear.", blanks:[]},
+
+  // ── Listening SWT ─────────────────────────────────────────
+  {id:6, type:"SWT", subtype:"Summarise Written Text", sentences:[
+    {text:"The speaker in the audio mainly discusses [Keyword].", blanks:["Keyword"]},
+    {text:"First, he says that [sentence 1].", blanks:["sentence 1"]},
+    {text:"Next, he mentions that [sentence 2].", blanks:["sentence 2"]},
+    {text:"Before wrapping up, the speaker adds that [sentence 3].", blanks:["sentence 3"]},
+    {text:"In conclusion, this is about [Keyword].", blanks:["Keyword"]},
   ]},
-  // SWT
-  {id:7, type:"SWT", subtype:"40~50 단어", sentences:[
-    {text:"주제, 특징, 영향, 장단점 문장을 찾아 접속사로 연결하기 (반드시 , 접속사 형태)", blanks:[]},
-    {text:"접속사 FANBOYS: For, And, Nor, But, Or, Yet, So 사용", blanks:[]},
-    {text:"원인 접속사: because, since, so 사용", blanks:[]},
-    {text:"전환 접속사: while, although, whereas, but 사용", blanks:[]},
-    {text:"추가 연결: and, so, both A and B 로 연결하기", blanks:[]},
-    {text:"핵심 키워드는 바뀌지 않게 패러프레이징 3~4개 하기", blanks:[]},
-  ]},
-  // SST
-  {id:8, type:"SST", subtype:"50~70 단어", sentences:[
+
+  // ── SST ───────────────────────────────────────────────────
+  {id:7, type:"SST", subtype:"50~70 단어", sentences:[
     {text:"This lecture focuses on [제목], including [키워드1]: [키워드2]: [키워드3]: [키워드4]: [키워드5].", blanks:["제목","키워드1","키워드2","키워드3","키워드4","키워드5"]},
     {text:"To begin with, it highlights that [문장1], which [문장2], and [문장3].", blanks:["문장1","문장2","문장3"]},
     {text:"Finally, this lecture gives information about [제목].", blanks:["제목"]},
   ]},
-  // WE — Introduction
-  {id:9, type:"WE", subtype:"Introduction", sentences:[
-    {text:"In recent years, the issue of [topic] has become a matter of significant concern.", blanks:["topic"]},
-    {text:"While some people argue that [opposite view], I strongly agree that [your position] because it brings substantial long-term benefits to society.", blanks:["opposite view","your position"]},
+
+  // ── WE ────────────────────────────────────────────────────
+  {id:8, type:"WE", subtype:"서론", sentences:[
+    {text:"Many people have different views about [@@], and I understand why this issue draws significant attention in modern society.", blanks:["@@"]},
+    {text:"There is ongoing debate about whether [@@] has positive or negative effects on our society.", blanks:["@@"]},
+    {text:"In this essay, I will discuss both sides of the issue and present my opinion with relevant examples.", blanks:[]},
   ]},
-  // WE — Body 1
-  {id:10, type:"WE", subtype:"Body 1 — 핵심 이유 1", sentences:[
-    {text:"To begin with, [your position] can effectively address major urban problems such as [problem].", blanks:["your position","problem"]},
-    {text:"For example, when [구체 사례], it leads to [positive result].", blanks:["구체 사례","positive result"]},
-    {text:"As a result, this approach improves overall efficiency and enhances people's daily lives.", blanks:[]},
+  {id:9, type:"WE", subtype:"본론1 — 긍정/찬성", sentences:[
+    {text:"To begin with, [@@] offers clear benefits in daily life.", blanks:["@@"]},
+    {text:"For example, [EX1] and [EX2] show how [@@] can be useful in many areas.", blanks:["EX1","EX2","@@"]},
+    {text:"These examples prove that [@@] can not only make life more convenient but also support progress for future generations.", blanks:["@@"]},
+    {text:"Therefore, the advantages of [@@] are evident in the economy, education, business, and even personal life.", blanks:["@@"]},
   ]},
-  // WE — Body 2
-  {id:11, type:"WE", subtype:"Body 2 — 핵심 이유 2", sentences:[
-    {text:"In addition, [your position] is more sustainable in the long run.", blanks:["your position"]},
-    {text:"It reduces [negative factor] and promotes [positive factor].", blanks:["negative factor","positive factor"]},
-    {text:"Therefore, governments can achieve both economic and environmental benefits simultaneously.", blanks:[]},
+  {id:10, type:"WE", subtype:"본론2 — 부정/반대", sentences:[
+    {text:"On the other hand, there are also negative aspects we cannot ignore.", blanks:[]},
+    {text:"For instance, [EX1] and [EX2] show that if [BB] is not properly managed, it can cause serious problems that negatively affect everyday life.", blanks:["EX1","EX2","BB"]},
+    {text:"If we do not pay attention to them, the disadvantages may become severe in the future.", blanks:[]},
   ]},
-  // WE — Body 3
-  {id:12, type:"WE", subtype:"Body 3 — 반대 + 반박", sentences:[
-    {text:"Admittedly, some believe that [opposite view] because [reason].", blanks:["opposite view","reason"]},
-    {text:"However, this is only a short-term solution, as it often leads to [problem].", blanks:["problem"]},
-    {text:"Thus, prioritizing [your position] remains the more effective strategy.", blanks:["your position"]},
-  ]},
-  // WE — Conclusion
-  {id:13, type:"WE", subtype:"Conclusion", sentences:[
-    {text:"In conclusion, although both perspectives have some merit, I firmly believe that [your position] is far more beneficial.", blanks:["your position"]},
-    {text:"Governments should therefore adopt this approach to ensure sustainable and efficient development.", blanks:[]},
+  {id:11, type:"WE", subtype:"결론", sentences:[
+    {text:"In conclusion, although both aspects are important, I believe that [@@] has a more positive overall impact, since it directly influences our daily lives.", blanks:["@@"]},
+    {text:"At the same time, we should carefully manage the risks of [@@] step by step.", blanks:["@@"]},
+    {text:"In this way, maintaining awareness of this issue can help societies make better decisions in the future.", blanks:[]},
   ]},
 ];
 
